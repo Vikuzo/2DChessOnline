@@ -13,6 +13,7 @@ class ChessPiece:
     __piece_name = ''
     __row = 0
     __column = 0
+    __icon = ''
 
     #  Costruttore
     #  @param self riferimento all'oggeto stesso
@@ -59,6 +60,12 @@ class ChessPiece:
     def get_piece_name(self):
         return self.__piece_name
 
+    def set_icon(self, icon):
+        self.__icon = icon
+
+    def get_icon(self):
+        return self.__icon
+
 
 # Classe dedita alla gestione dei pedoni
 
@@ -77,6 +84,11 @@ class Pawn(ChessPiece):
 
         with open('Configuration.yaml', 'r') as yamlConfig:
             self.__config = yaml.load(yamlConfig, Loader=yaml.FullLoader)
+
+        if self.__config['chessConfig']['blackPieces']['startLetter'] == self.get_piece_name()[0:1]:
+            self.set_icon(self.__config['imagePath']['bp'])
+        else:
+            self.set_icon(self.__config['imagePath']['wp'])
 
     # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso i pedoni. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
@@ -97,7 +109,6 @@ class Pawn(ChessPiece):
 
         if self.__first_move:
             max_movement = 2
-            self.__first_move = False
 
         if self.__config['chessConfig']['whitePieces']['startLetter'] == self.get_piece_name()[0:1]:
             max_movement *= -1
@@ -126,15 +137,23 @@ class Pawn(ChessPiece):
         else:
             acceptable_moves.clear()
 
-        if vp != chessboard[self.get_row() + row_movement][self.get_column() + 1] and self.get_column() < columns:
-            if start_letter != chessboard[self.get_row() + row_movement][self.get_column() + 1][0:1]:
-                acceptable_moves.append((self.get_row() + row_movement, self.get_column() + 1))
+        if self.get_column() < columns - 1:
+            if vp != chessboard[self.get_row() + row_movement][self.get_column() + 1]:
+                if start_letter != chessboard[self.get_row() + row_movement][self.get_column() + 1][0:1]:
+                    acceptable_moves.append((self.get_row() + row_movement, self.get_column() + 1))
 
-        if vp != chessboard[self.get_row() + row_movement][self.get_column() - 1] and self.get_column() > 0:
-            if start_letter != chessboard[self.get_row() + row_movement][self.get_column() - 1][0:1]:
-                acceptable_moves.append((self.get_row() + row_movement, self.get_column() - 1))
+        if self.get_column() > 0:
+            if vp != chessboard[self.get_row() + row_movement][self.get_column() - 1]:
+                if start_letter != chessboard[self.get_row() + row_movement][self.get_column() - 1][0:1]:
+                    acceptable_moves.append((self.get_row() + row_movement, self.get_column() - 1))
 
         return acceptable_moves
+
+    def set_first_move(self):
+        self.__first_move = not self.__first_move
+
+    def get_first_move(self):
+        return self.__first_move
 
 
 # Classe dedita alla gestione delle torri
@@ -153,6 +172,11 @@ class Rook(ChessPiece):
 
         with open('Configuration.yaml', 'r') as yamlConfig:
             self.__config = yaml.load(yamlConfig, Loader=yaml.FullLoader)
+
+        if self.__config['chessConfig']['blackPieces']['startLetter'] == self.get_piece_name()[0:1]:
+            self.set_icon(self.__config['imagePath']['br'])
+        else:
+            self.set_icon(self.__config['imagePath']['wr'])
 
     # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso le torri. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
@@ -251,6 +275,11 @@ class Bishop(ChessPiece):
 
         with open('Configuration.yaml', 'r') as yamlConfig:
             self.__config = yaml.load(yamlConfig, Loader=yaml.FullLoader)
+
+        if self.__config['chessConfig']['blackPieces']['startLetter'] == self.get_piece_name()[0:1]:
+            self.set_icon(self.__config['imagePath']['bb'])
+        else:
+            self.set_icon(self.__config['imagePath']['wb'])
 
     # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso gli alfieri. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
@@ -375,6 +404,11 @@ class Knight(ChessPiece):
         with open('Configuration.yaml', 'r') as yamlConfig:
             self.__config = yaml.load(yamlConfig, Loader=yaml.FullLoader)
 
+        if self.__config['chessConfig']['blackPieces']['startLetter'] == self.get_piece_name()[0:1]:
+            self.set_icon(self.__config['imagePath']['bk'])
+        else:
+            self.set_icon(self.__config['imagePath']['wk'])
+
     # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso i cavalli. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
     # alle quali sarà accettabile muovere la pedina
@@ -477,6 +511,11 @@ class Queen(ChessPiece):
 
         with open('Configuration.yaml', 'r') as yamlConfig:
             self.__config = yaml.load(yamlConfig, Loader=yaml.FullLoader)
+
+        if self.__config['chessConfig']['blackPieces']['startLetter'] == self.get_piece_name()[0:1]:
+            self.set_icon(self.__config['imagePath']['bq'])
+        else:
+            self.set_icon(self.__config['imagePath']['wq'])
 
     # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso le regine. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
@@ -669,6 +708,11 @@ class King(ChessPiece):
 
         with open('Configuration.yaml', 'r') as yamlConfig:
             self.__config = yaml.load(yamlConfig, Loader=yaml.FullLoader)
+
+        if self.__config['chessConfig']['blackPieces']['startLetter'] == self.get_piece_name()[0:1]:
+            self.set_icon(self.__config['imagePath']['bK'])
+        else:
+            self.set_icon(self.__config['imagePath']['wK'])
 
     # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso i re. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
