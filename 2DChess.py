@@ -26,6 +26,10 @@ def from_string_to_chessboard(string, rows, columns):
 
 
 def chessboard_print(config, height, width, buttons, pieceColor, window, chessboard, moves_button):
+    background = pygame.image.load(config['imagePath']['gameBackground'])
+    background = pygame.transform.scale(background, (width, height))
+    window.blit(background, (0, 0))
+
     YELLOW = (config['color']['yellow']['red'], config['color']['yellow']['green'],
               config['color']['yellow']['blue'])
     LIGHT_GREEN = (config['color']['light_green']['red'], config['color']['light_green']['green'],
@@ -100,10 +104,46 @@ class Button:
                     for item in all_pieces:
                         if item.get_piece_name() == self.piece_name:
                             moves = item.piece_possible_moves(chessboard)
-                            for move in moves:
-                                moves_button.append(
-                                    movesButton(((move[1] * self.size) + (width - (self.size * 8)) / 2,
-                                                 (move[0] * self.size)), self.size, self.piece_name))
+                            if moves != [(8, 8)]:
+                                for move in moves:
+                                    moves_button.append(
+                                        movesButton(((move[1] * self.size) + (width - (self.size * 8)) / 2,
+                                                    (move[0] * self.size)), self.size, self.piece_name))
+                            else:
+                                if pieceColor == config['chessConfig']['whitePieces']['startLetter']:
+                                    x, y = 0, 0
+                                    moves_button.append(choiceButton(config['imagePath']['wq'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['whitePieces']['wq']))
+                                    y += self.size
+                                    moves_button.append(choiceButton(config['imagePath']['wb'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['whitePieces']['wb']))
+                                    y += self.size
+                                    moves_button.append(choiceButton(config['imagePath']['wk'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['whitePieces']['wk']))
+                                    y += self.size
+                                    moves_button.append(choiceButton(config['imagePath']['wr'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['whitePieces']['wr']))
+                                else:
+                                    x, y = 0, 0
+                                    moves_button.append(choiceButton(config['imagePath']['bq'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['blackPieces']['bq']))
+                                    y += self.size
+                                    moves_button.append(choiceButton(config['imagePath']['bb'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['blackPieces']['bb']))
+                                    y += self.size
+                                    moves_button.append(choiceButton(config['imagePath']['bk'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['blackPieces']['bk']))
+                                    y += self.size
+                                    moves_button.append(choiceButton(config['imagePath']['br'], (x, y),
+                                                        self.size, self.piece_name,
+                                                        config['chessConfig']['blackPieces']['br']))
                     chessboard_print(config, height, width, buttons, pieceColor, window, chessboard,
                                      moves_button)
                     pygame.draw.rect(window, (config['color']['cyan']['red'], config['color']['cyan']['green'],
@@ -140,7 +180,6 @@ class movesButton:
                             button.rect = pygame.Rect(self.x, self.y, self.size, self.size)
                             for piece in all_pieces:
                                 if piece.get_piece_name() == self.piece_name:
-                                    print(piece.get_piece_name())
                                     piece.set_row(int(self.y // self.size))
                                     piece.set_column(int((self.x - ((width - (self.size * 8)) / 2)) // self.size))
                                     moves_button.clear()
@@ -153,6 +192,89 @@ class movesButton:
                                                   (int(self.y // self.size),
                                                   int(self.x - ((width - (self.size * 8)) / 2)) // self.size),
                                                   config['chessConfig']['vp'])
+
+
+class choiceButton:
+    def __init__(self, icon, pos, size, piece_name, new_piece):
+        self.x, self.y = pos
+        self.size = size
+        self.piece_name = piece_name
+        self.new_piece = new_piece
+        self.icon = icon
+        self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
+
+    def show(self, window, config):
+        pygame.draw.rect(window, (config['color']['red']['red'], config['color']['red']['green'],
+                                  config['color']['red']['blue']), self.rect)
+        icon = pygame.image.load(self.icon)
+        icon = pygame.transform.scale(icon, (self.size, self.size))
+        window.blit(icon, (self.x, self.y))
+
+    def click(self, event, chessboard, config, buttons, all_pieces, moves_button, height, width, pieceColor, window):
+        x, y = pygame.mouse.get_pos()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if pygame.mouse.get_pressed()[0]:
+                if self.rect.collidepoint(x, y):
+                    moves_button.clear()
+                    c = 1
+                    for lines in chessboard:
+                        for element in lines:
+                            if element[0:2] == self.piece_name[0:2]:
+                                c += 1
+                    i = 0
+
+                    for piece in all_pieces:
+                        if piece.get_piece_name() == self.piece_name:
+                            if self.new_piece[1:2] == config['chessConfig']['whitePieces']['wb'][1:2]:
+                                p = all_pieces.pop(i)
+                                all_pieces.append(chessPieces.Bishop(self.new_piece + str(c), p.get_row(),
+                                                                     p.get_column()))
+                                chessboard[p.get_row()][p.get_column()] = self.new_piece + str(c)
+                                print(chessboard)
+                                for button in buttons:
+                                    if button.piece_name == self.piece_name:
+                                        button.icon = config['imagePath'][self.new_piece]
+                                        button.piece_name = all_pieces[-1].get_piece_name()
+                                chessboard_print(config, height, width, buttons, pieceColor, window, chessboard,
+                                                 moves_button)
+                                return chessboard
+                            if self.new_piece[1:2] == config['chessConfig']['whitePieces']['wk'][1:2]:
+                                p = all_pieces.pop(i)
+                                all_pieces.append(chessPieces.Knight(self.new_piece + str(c), p.get_row(),
+                                                                     p.get_column()))
+                                chessboard[p.get_row()][p.get_column()] = self.new_piece + str(c)
+                                for button in buttons:
+                                    if button.piece_name == self.piece_name:
+                                        button.icon = config['imagePath'][self.new_piece]
+                                        button.piece_name = all_pieces[-1].get_piece_name()
+                                chessboard_print(config, height, width, buttons, pieceColor, window, chessboard,
+                                                 moves_button)
+                                return chessboard
+                            if self.new_piece[1:2] == config['chessConfig']['whitePieces']['wq'][1:2]:
+                                p = all_pieces.pop(i)
+                                all_pieces.append(chessPieces.Queen(self.new_piece + str(c), p.get_row(),
+                                                                    p.get_column()))
+                                chessboard[p.get_row()][p.get_column()] = self.new_piece + str(c)
+                                for button in buttons:
+                                    if button.piece_name == self.piece_name:
+                                        button.icon = config['imagePath'][self.new_piece]
+                                        button.piece_name = all_pieces[-1].get_piece_name()
+                                chessboard_print(config, height, width, buttons, pieceColor, window, chessboard,
+                                                 moves_button)
+                                return chessboard
+                            if self.new_piece[1:2] == config['chessConfig']['whitePieces']['wk'][1:2]:
+                                p = all_pieces.pop(i)
+                                all_pieces.append(chessPieces.Rook(self.new_piece + str(c), p.get_row(),
+                                                                   p.get_column()))
+                                chessboard[p.get_row()][p.get_column()] = self.new_piece + str(c)
+                                for button in buttons:
+                                    if button.piece_name == self.piece_name:
+                                        button.icon = config['imagePath'][self.new_piece]
+                                        button.piece_name = all_pieces[-1].get_piece_name()
+                                chessboard_print(config, height, width, buttons, pieceColor, window, chessboard,
+                                                 moves_button)
+                                return chessboard
+                        i += 1
 
 
 class ChessClient:
@@ -310,6 +432,97 @@ class ChessClient:
                          self.__pieceColor, window, chessboard, self.__moves_button)
         pygame.display.update()
 
+    def checkmate_check(self, chessboard, clientSocket):
+        other_piece = []
+
+        if self.__pieceColor == self.__config['chessConfig']['whitePieces']['startLetter']:
+            c1 = 0
+            for lines in chessboard:
+                c2 = 0
+                for piece in lines:
+                    if piece[0:1] != self.__pieceColor:
+                        if piece[1:2] == self.__config['chessConfig']['blackPieces']['bp'][1:2]:
+                            pawn = chessPieces.Pawn(piece, c1, c2)
+                            pawn.set_first_move()
+                            other_piece.append(pawn)
+                        if piece[1:2] == self.__config['chessConfig']['blackPieces']['br'][1:2]:
+                            rook = chessPieces.Rook(piece, c1, c2)
+                            other_piece.append(rook)
+                        if piece[1:2] == self.__config['chessConfig']['blackPieces']['bb'][1:2]:
+                            bishop = chessPieces.Bishop(piece, c1, c2)
+                            other_piece.append(bishop)
+                        if piece[1:2] == self.__config['chessConfig']['blackPieces']['bk'][1:2]:
+                            knight = chessPieces.Knight(piece, c1, c2)
+                            other_piece.append(knight)
+                        if piece[1:2] == self.__config['chessConfig']['blackPieces']['bK'][1:2]:
+                            king = chessPieces.King(piece, c1, c2)
+                            other_piece.append(king)
+                        if piece[1:2] == self.__config['chessConfig']['blackPieces']['bq'][1:2]:
+                            queen = chessPieces.Queen(piece, c1, c2)
+                            other_piece.append(queen)
+                        c2 += 1
+
+                c1 += 1
+
+            king = chessPieces.King('bk', 0, 0)
+
+            for pieces in self.__all_pieces:
+                if pieces.get_piece_name() == self.__config['chessConfig']['whitePieces']['wK']:
+                    king = pieces
+
+            king_moves = (king.get_row(), king.get_column())
+
+            for piece in other_piece:
+                lis = piece.piece_possible_moves(chessboard)
+                for element in lis:
+                    if element[0] == king_moves[0]:
+                        if element[1] == king_moves[1]:
+                            clientSocket.send(self.__config['chessConfig']['wins'].encode('utf-8'))
+                            return True
+        else:
+            c1 = 0
+            for lines in chessboard:
+                c2 = 0
+                for piece in lines:
+                    if piece[0:1] != self.__pieceColor:
+                        if piece[1:2] == self.__config['chessConfig']['whitePieces']['wp'][1:2]:
+                            pawn = chessPieces.Pawn(piece, c1, c2)
+                            pawn.set_first_move()
+                            other_piece.append(pawn)
+                        if piece[1:2] == self.__config['chessConfig']['whitePieces']['wr'][1:2]:
+                            rook = chessPieces.Rook(piece, c1, c2)
+                            other_piece.append(rook)
+                        if piece[1:2] == self.__config['chessConfig']['whitePieces']['wb'][1:2]:
+                            bishop = chessPieces.Bishop(piece, c1, c2)
+                            other_piece.append(bishop)
+                        if piece[1:2] == self.__config['chessConfig']['whitePieces']['wk'][1:2]:
+                            knight = chessPieces.Knight(piece, c1, c2)
+                            other_piece.append(knight)
+                        if piece[1:2] == self.__config['chessConfig']['whitePieces']['wK'][1:2]:
+                            king = chessPieces.King(piece, c1, c2)
+                            other_piece.append(king)
+                        if piece[1:2] == self.__config['chessConfig']['whitePieces']['wq'][1:2]:
+                            queen = chessPieces.Queen(piece, c1, c2)
+                            other_piece.append(queen)
+                        c2 += 1
+                c1 += 1
+            king = chessPieces.King('bk', 0, 0)
+
+            for pieces in self.__all_pieces:
+                if pieces.get_piece_name() == self.__config['chessConfig']['blackPieces']['bK']:
+                    king = pieces
+
+            king_moves = (king.get_row(), king.get_column())
+
+            for piece in other_piece:
+                lis = piece.piece_possible_moves(chessboard)
+                for element in lis:
+                    if element == king_moves:
+                        clientSocket.send(self.__config['chessConfig']['wins'].encode('utf-8'))
+                        return True
+
+        return False
+
     def game(self, window, chessboard, clientSocket):
         pygame.display.set_caption('2DChessOnline - THE GAME')
         background = pygame.image.load(self.__config['imagePath']['gameBackground'])
@@ -317,6 +530,15 @@ class ChessClient:
         window.blit(background, (0, 0))
 
         self.chessboard_generation(window, chessboard)
+
+        win_or_lost = False
+        after_game_screen = False
+
+        if self.__pieceColor == self.__config['chessConfig']['blackPieces']['startLetter']:
+            chessboard = from_string_to_chessboard(clientSocket.recv(
+                self.__config['socketConfig']['buffer']).decode('utf-8'), self.__rows, self.__columns)
+            chessboard_print(self.__config, self.__height, self.__width, self.__buttons,
+                             self.__pieceColor, window, chessboard, self.__moves_button)
 
         while self.__running:
             for event in pygame.event.get():
@@ -332,8 +554,67 @@ class ChessClient:
                                    self.__moves_button, self.__height, self.__width, self.__pieceColor, window)
                     if c is not None:
                         chessboard = c
+                        chessboard_print(self.__config, self.__height, self.__width, self.__buttons,
+                                         self.__pieceColor, window, chessboard, self.__moves_button)
+                        if self.checkmate_check(chessboard, clientSocket):
+                            self.__running = False
+                            after_game_screen = True
+                        else:
+                            clientSocket.send(from_chessboard_to_string(chessboard).encode('utf-8'))
+                            pygame.display.update()
+
+                            message = clientSocket.recv(self.__config['socketConfig']['buffer']).decode('utf-8')
+                            if message == self.__config['chessConfig']['wins']:
+                                self.__running = False
+                                after_game_screen = True
+                                win_or_lost = True
+                            else:
+                                chessboard = from_string_to_chessboard(message, self.__rows, self.__columns)
+                                lis = []
+                                for line in chessboard:
+                                    for piece in line:
+                                        if piece[0:1] == self.__pieceColor:
+                                            lis.append(piece)
+
+                                new_all_pieces = []
+                                for piece in self.__all_pieces:
+                                    if piece.get_piece_name() in lis:
+                                        new_all_pieces.append(piece)
+
+                                self.__all_pieces = new_all_pieces
+
+                                new_buttons = []
+                                for button in self.__buttons:
+                                    if button.piece_name in lis:
+                                        new_buttons.append(button)
+
+                                self.__buttons = new_buttons
+                                chessboard_print(self.__config, self.__height, self.__width, self.__buttons,
+                                                 self.__pieceColor, window, chessboard, self.__moves_button)
+                                pygame.display.update()
 
             pygame.display.update()
+
+        if win_or_lost:
+            win = pygame.image.load(self.__config['imagePath']['winImage'])
+            win = pygame.transform.scale(win, (self.__width//2, self.__height//2))
+            window.blit(win, (self.__width//2 - (self.__width//4), self.__height//2 - (self.__height//4)))
+        else:
+            win = pygame.image.load(self.__config['imagePath']['loseImage'])
+            win = pygame.transform.scale(win, (self.__width // 2, self.__height // 2))
+            window.blit(win, (self.__width // 2 - (self.__width // 4), self.__height // 2 - (self.__height//4)))
+
+        pygame.display.update()
+
+        while after_game_screen:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    after_game_screen, self.__playing = False, False
+
+                key_pressed = pygame.key.get_pressed()
+                if key_pressed[pygame.K_RETURN]:
+                    after_game_screen = False
+                    clientSocket.close()
 
 
 def __main__():

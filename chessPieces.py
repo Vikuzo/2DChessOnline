@@ -116,11 +116,11 @@ class Pawn(ChessPiece):
 
         if max_movement > 0:
             if self.get_row() == rows - 1:
-                return []  # Da modificare
+                return [(8, 8)]  # Da modificare
 
         if max_movement < 0:
             if self.get_row() == 0:
-                return []  # Da modificare
+                return [(8, 8)]  # Da modificare
 
         if 2 == max_movement:
             if vp == chessboard[self.get_row() + max_movement][self.get_column()]:
