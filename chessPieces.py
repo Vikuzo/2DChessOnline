@@ -1,12 +1,14 @@
+## @mainpage
+# @author Cusenza Vincenzo
+# @version 1.0
+# @date 28/05/2021
+
+##  @file chessPieces.py
+
 import yaml
 
 
-#  @file chessPieces.py
-
-# Si occupa di fornire i metodi per la gestione, a livello basso, del giuco degli scacchi
-
-
-# Classe da cui erediteranno tutti i pezzi metodi comuni
+## Classe da cui erediteranno tutti i pezzi metodi comuni
 
 
 class ChessPiece:
@@ -15,7 +17,7 @@ class ChessPiece:
     __column = 0
     __icon = ''
 
-    #  Costruttore
+    ##  Costruttore
     #  @param self riferimento all'oggeto stesso
     #  @param piece_name indicazione sul pezzo in questione
     #  @param row posizione originaria sulle righe del campo di gioco del pezzo
@@ -26,54 +28,59 @@ class ChessPiece:
         self.__row = row
         self.__column = column
 
-    # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
+    ## Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano
     # @param chessboard matrice del campo di gioco
 
     def piece_possible_moves(self, chessboard):
         pass
 
-    # Aggiorna la coordinata y del pezzo
+    ## Aggiorna la coordinata y del pezzo
     # @param row nuovo valore della y
 
     def set_row(self, row):
         self.__row = row
 
-    # Restituisce la coordinata y del pezzo
+    ## Restituisce la coordinata y del pezzo
 
     def get_row(self):
         return self.__row
 
-    # Aggiorna la coordinata x del pezzo
+    ## Aggiorna la coordinata x del pezzo
     # @param column nuovo valore della x
 
     def set_column(self, column):
         self.__column = column
 
-    # Restituisce la coordinata y del pezzo
+    ## Restituisce la coordinata y del pezzo
 
     def get_column(self):
         return self.__column
 
-    # Restituisce il nome del pezzo
+    ## Restituisce il nome del pezzo
 
     def get_piece_name(self):
         return self.__piece_name
 
+    ## Aggiorna il valore dell'icona
+    # @param icon nuovo valore dell'icona
+
     def set_icon(self, icon):
         self.__icon = icon
+
+    ## Restituisce il valore dell'icona
 
     def get_icon(self):
         return self.__icon
 
 
-# Classe dedita alla gestione dei pedoni
+## Classe dedita alla gestione dei pedoni
 
 
 class Pawn(ChessPiece):
     __first_move = True
 
-    # Costruttore
+    ## Costruttore
     #  @param self riferimento all'oggeto stesso
     #  @param piece_name indicazione sul pezzo in questione
     #  @param row posizione originaria sulle righe del campo di gioco del pezzo
@@ -90,7 +97,7 @@ class Pawn(ChessPiece):
         else:
             self.set_icon(self.__config['imagePath']['wp'])
 
-    # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
+    ## Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso i pedoni. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
     # alle quali sarà accettabile muovere la pedina
     # @param chessboard matrice del campo di gioco
@@ -149,19 +156,23 @@ class Pawn(ChessPiece):
 
         return acceptable_moves
 
+    ## Aggiorna il valore della prima mossa
+
     def set_first_move(self):
         self.__first_move = not self.__first_move
+
+    ## Restituisce il valore della prima mossa
 
     def get_first_move(self):
         return self.__first_move
 
 
-# Classe dedita alla gestione delle torri
+## Classe dedita alla gestione delle torri
 
 
 class Rook(ChessPiece):
 
-    # Costruttore
+    ## Costruttore
     #  @param self riferimento all'oggeto stesso
     #  @param piece_name indicazione sul pezzo in questione
     #  @param row posizione originaria sulle righe del campo di gioco del pezzo
@@ -178,7 +189,7 @@ class Rook(ChessPiece):
         else:
             self.set_icon(self.__config['imagePath']['wr'])
 
-    # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
+    ## Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso le torri. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
     # alle quali sarà accettabile muovere la pedina
     # @param chessboard matrice del campo di gioco
@@ -259,12 +270,12 @@ class Rook(ChessPiece):
         return acceptable_moves
 
 
-# Classe dedita alla gestione degli alfieri
+## Classe dedita alla gestione degli alfieri
 
 
 class Bishop(ChessPiece):
 
-    # Costruttore
+    ## Costruttore
     #  @param self riferimento all'oggeto stesso
     #  @param piece_name indicazione sul pezzo in questione
     #  @param row posizione originaria sulle righe del campo di gioco del pezzo
@@ -281,7 +292,7 @@ class Bishop(ChessPiece):
         else:
             self.set_icon(self.__config['imagePath']['wb'])
 
-    # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
+    ## Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso gli alfieri. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
     # alle quali sarà accettabile muovere la pedina
     # @param chessboard matrice del campo di gioco
@@ -388,11 +399,11 @@ class Bishop(ChessPiece):
         return acceptable_moves
 
 
-# Classe dedita alla gestione dei cavalli
+## Classe dedita alla gestione dei cavalli
 
 
 class Knight(ChessPiece):
-    # Costruttore
+    ## Costruttore
     #  @param self riferimento all'oggeto stesso
     #  @param piece_name indicazione sul pezzo in questione
     #  @param row posizione originaria sulle righe del campo di gioco del pezzo
@@ -409,7 +420,7 @@ class Knight(ChessPiece):
         else:
             self.set_icon(self.__config['imagePath']['wk'])
 
-    # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
+    ## Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso i cavalli. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
     # alle quali sarà accettabile muovere la pedina
     # @param chessboard matrice del campo di gioco
@@ -495,12 +506,12 @@ class Knight(ChessPiece):
         return acceptable_moves
 
 
-# Classe dedita alla gestione delle regine
+## Classe dedita alla gestione delle regine
 
 
 class Queen(ChessPiece):
 
-    # Costruttore
+    ## Costruttore
     #  @param self riferimento all'oggeto stesso
     #  @param piece_name indicazione sul pezzo in questione
     #  @param row posizione originaria sulle righe del campo di gioco del pezzo
@@ -517,7 +528,7 @@ class Queen(ChessPiece):
         else:
             self.set_icon(self.__config['imagePath']['wq'])
 
-    # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
+    ## Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso le regine. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
     # alle quali sarà accettabile muovere la pedina
     # @param chessboard matrice del campo di gioco
@@ -692,12 +703,12 @@ class Queen(ChessPiece):
         return acceptable_moves
 
 
-# Classe dedita alla gestione dei re
+## Classe dedita alla gestione dei re
 
 
 class King(ChessPiece):
 
-    # Costruttore
+    ## Costruttore
     #  @param self riferimento all'oggeto stesso
     #  @param piece_name indicazione sul pezzo in questione
     #  @param row posizione originaria sulle righe del campo di gioco del pezzo
@@ -714,7 +725,7 @@ class King(ChessPiece):
         else:
             self.set_icon(self.__config['imagePath']['wK'])
 
-    # Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
+    ## Si occupa di definire le possibili mosse attuabili da un pezzo; è astratto viene modificato dalle classi che la
     # ereditano, in questo caso i re. Questa funzione, dopo i controlli vari, restituirà una lista di coordinate
     # alle quali sarà accettabile muovere la pedina
     # @param chessboard matrice del campo di gioco

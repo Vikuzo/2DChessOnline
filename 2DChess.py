@@ -1,7 +1,14 @@
+##  @file 2DChess.py
+
 import chessPieces
 import pygame
 import socket
 import yaml
+
+
+## La funzione converte la matrice degli scacchi in una stringa
+# @param chessboard matrice del campo di gioco
+# @return string la scacchiera fatta a stringa
 
 
 def from_chessboard_to_string(chessboard):
@@ -10,6 +17,13 @@ def from_chessboard_to_string(chessboard):
         for piece in line:
             string += piece + '*'
     return string
+
+
+## La funzione converte la scacchiera in forma di stringa in matrice
+# @param string la stringa da convertire
+# @param rows il numero di righe della scacchiera
+# @param columns il numero di colonne della scacchiera
+# @return chessboard la versione in matrice della scacchiera
 
 
 def from_string_to_chessboard(string, rows, columns):
@@ -23,6 +37,17 @@ def from_string_to_chessboard(string, rows, columns):
         chessboard.append(lis)
 
     return chessboard
+
+
+## La funzione stampa graficamente la scacchiera
+# @param config file di configurazione
+# @param height altezza della finestra
+# @param width larghezza della finestra
+# @param buttons vettore dei pezzi
+# @param pieceColor colore dei pezzi del giocatore
+# @param window oggetto rappresentante la finestra
+# @param chessboard la matrice della scacchiera
+# @param moves_button vettori dei bottoni delle mosse
 
 
 def chessboard_print(config, height, width, buttons, pieceColor, window, chessboard, moves_button):
@@ -81,7 +106,17 @@ def update(chessboard, piece_name, coordinates, zero):
     return chessboard
 
 
+## Classe per la generazione dei pezzi del colore del giocatore
+
+
 class Button:
+
+    ## Costruttore
+    #  @param self riferimento all'oggeto stesso
+    # @param icon valore dell'icona
+    # @param pos tupla delle coordinate
+    # @param size grandezza del rettangolo che occuperà il bottone
+    # @param piece_name nome del pezzo rappresentato
 
     def __init__(self, icon, pos, size, piece_name):
         self.x, self.y = pos
@@ -90,10 +125,27 @@ class Button:
         self.piece_name = piece_name
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
 
+    ## Mostra il bottone
+    #  @param self riferimento all'oggeto stesso
+    # @param window riferimento alla finestra
+
     def show(self, window):
         icon = pygame.image.load(self.icon)
         icon = pygame.transform.scale(icon, (self.size, self.size))
         window.blit(icon, (self.x, self.y))
+
+    ## La funzione che gestisce il click sul bottone
+    #  @param self riferimento all'oggeto stesso
+    # @param event vettore degli eventi
+    # @param config file di configurazione
+    # @param height altezza della finestra
+    # @param width larghezza della finestra
+    # @param all_pieces vettore degli scacchi del giocatore
+    # @param buttons vettore dei bottoni degli scacchi del giocatore
+    # @param pieceColor colore dei pezzi del giocatore
+    # @param window riferimento all'oggetto finestra
+    # @param chessboard la matrice della scacchiera
+    # @param moves_button vettore dei bottoni di movimento
 
     def click(self, event, config, height, width, all_pieces, buttons, pieceColor, window, chessboard, moves_button):
         x, y = pygame.mouse.get_pos()
@@ -157,16 +209,44 @@ class Button:
         self.y = y
 
 
+## Bottone dei movimenti
+
+
 class movesButton:
+
+    ## Costruttore
+    #  @param self riferimento all'oggeto stesso
+    # @param pos tupla delle coordinate
+    # @param size grandezza del rettangolo che occuperà il bottone
+    # @param piece_name nome del pezzo rappresentato
+
     def __init__(self, pos, size, piece_name):
         self.x, self.y = pos
         self.size = size
         self.piece_name = piece_name
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
 
+    ## Mostra il bottone
+    #  @param self riferimento all'oggeto stesso
+    # @param window riferimento alla finestra
+    # @param config file di configurazione
+
     def show(self, window, config):
         pygame.draw.rect(window, (config['color']['red']['red'], config['color']['red']['green'],
                                   config['color']['red']['blue']), self.rect)
+
+    ## La funzione che gestisce il click sul bottone
+    #  @param self riferimento all'oggeto stesso
+    # @param event vettore degli eventi
+    # @param config file di configurazione
+    # @param height altezza della finestra
+    # @param width larghezza della finestra
+    # @param all_pieces vettore degli scacchi del giocatore
+    # @param buttons vettore dei bottoni degli scacchi del giocatore
+    # @param pieceColor colore dei pezzi del giocatore
+    # @param window riferimento all'oggetto finestra
+    # @param chessboard la matrice della scacchiera
+    # @param moves_button vettore dei bottoni di movimento
 
     def click(self, event, chessboard, config, buttons, all_pieces, moves_button, height, width, pieceColor, window):
         x, y = pygame.mouse.get_pos()
@@ -194,7 +274,19 @@ class movesButton:
                                                   config['chessConfig']['vp'])
 
 
+## Bottone di modifica del pezzo
+
+
 class choiceButton:
+
+    ## Costruttore
+    #  @param self riferimento all'oggeto stesso
+    # @param icon valore dell'icona
+    # @param pos tupla delle coordinate
+    # @param size grandezza del rettangolo che occuperà il bottone
+    # @param piece_name nome del pezzo rappresentato
+    # @param new_piece nome del pezzo in cui il pezzo selezionato verrà trasformato
+
     def __init__(self, icon, pos, size, piece_name, new_piece):
         self.x, self.y = pos
         self.size = size
@@ -203,12 +295,31 @@ class choiceButton:
         self.icon = icon
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
 
+    ## Mostra il bottone
+    #  @param self riferimento all'oggeto stesso
+    # @param window riferimento alla finestra
+    # @param config file di configurazione
+
     def show(self, window, config):
         pygame.draw.rect(window, (config['color']['red']['red'], config['color']['red']['green'],
                                   config['color']['red']['blue']), self.rect)
         icon = pygame.image.load(self.icon)
         icon = pygame.transform.scale(icon, (self.size, self.size))
         window.blit(icon, (self.x, self.y))
+
+    ## La funzione che gestisce il click sul bottone
+    #  @param self riferimento all'oggeto stesso
+    # @param event vettore degli eventi
+    # @param config file di configurazione
+    # @param height altezza della finestra
+    # @param width larghezza della finestra
+    # @param all_pieces vettore degli scacchi del giocatore
+    # @param buttons vettore dei bottoni degli scacchi del giocatore
+    # @param pieceColor colore dei pezzi del giocatore
+    # @param window riferimento all'oggetto finestra
+    # @param chessboard la matrice della scacchiera
+    # @param moves_button vettore dei bottoni di movimento
+    # @return chessboard ritorna la matrice della scacchiera col nuovo pezzo
 
     def click(self, event, chessboard, config, buttons, all_pieces, moves_button, height, width, pieceColor, window):
         x, y = pygame.mouse.get_pos()
@@ -277,6 +388,9 @@ class choiceButton:
                         i += 1
 
 
+## Classe che permette di collegarsi al server e giocare
+
+
 class ChessClient:
     __run = False
     __pieceColor = ''
@@ -285,6 +399,9 @@ class ChessClient:
     __all_pieces = []
     __buttons = []
     __moves_button = []
+
+    ## Costruttore
+    #  @param self riferimento all'oggeto stesso
 
     def __init__(self):
         with open('Configuration.yaml', 'r') as yamlConfig:
@@ -316,6 +433,10 @@ class ChessClient:
 
         return False
 
+    ## La funzione genera tutto ciò che è visibile nel menù
+    #  @param self riferimento all'oggeto stesso
+    # @param riferimento alla finestra
+
     def menu_text(self, window):
         background = pygame.image.load(self.__config['imagePath']['menuBackground'])
         background = pygame.transform.scale(background, (self.__width, self.__height))
@@ -330,6 +451,10 @@ class ChessClient:
         window.blit(menuText, ((self.__width // 2) - 60, self.__height // 3))
 
         pygame.display.update()
+
+    ## La funzione si occupa di non lasciar chiudere il menù a meno che non sia l'utente a volerlo
+    #  @param self riferimento all'oggeto stesso
+    # @param riferimento alla finestra
 
     def main_menu(self, window):
         clock = pygame.time.Clock()
@@ -358,6 +483,11 @@ class ChessClient:
                 pygame.display.update()
 
         pygame.quit()
+
+    ## La funzione che genera tutto ciò di correlato alla scacchiera (vettori di oggetti, vettori di bottoni ecc...)
+    #  @param self riferimento all'oggeto stesso
+    # @param riferimento alla finestra
+    # @param chessboard la matrice della scacchiera
 
     def chessboard_generation(self, window, chessboard):
         sizes = self.__height // 8
@@ -431,6 +561,11 @@ class ChessClient:
         chessboard_print(self.__config, self.__height, self.__width, self.__buttons,
                          self.__pieceColor, window, chessboard, self.__moves_button)
         pygame.display.update()
+
+    ## La funzione controlla se il re ha subito lo scacco matto oppure no
+    #  @param self riferimento all'oggeto stesso
+    # @param chessboard matrice della scacchiera
+    # @param clientSocket socket di comunicazione col server
 
     def checkmate_check(self, chessboard, clientSocket):
         other_piece = []
@@ -522,6 +657,12 @@ class ChessClient:
                         return True
 
         return False
+
+    ## La funzione si occupa di permettere all'utente di giocare
+    #  @param self riferimento all'oggeto stesso
+    # @param riferimento alla finestra
+    # @param chessboard matrice della scacchiera
+    # @param clientSocket socket di comunicazione col server
 
     def game(self, window, chessboard, clientSocket):
         pygame.display.set_caption('2DChessOnline - THE GAME')
@@ -615,6 +756,9 @@ class ChessClient:
                 if key_pressed[pygame.K_RETURN]:
                     after_game_screen = False
                     clientSocket.close()
+
+
+## Funzione principale del programma, partirà da qui
 
 
 def __main__():

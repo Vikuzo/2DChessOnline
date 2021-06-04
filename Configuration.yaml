@@ -1,0 +1,71 @@
+color:
+  white:
+    red: 255
+    green: 255
+    blue: 255
+  yellow:
+    red: 242
+    green: 238
+    blue: 203
+  light_green:
+    red: 144
+    green: 238
+    blue: 144
+  cyan:
+    red: 0
+    green: 255
+    blue: 255
+  red:
+    red: 255
+    green: 0
+    blue: 0
+chessConfig:
+  rows: 8
+  columns: 8
+  vp: '0'
+  loss: 'YOU LOST'
+  wins: 'YOU WON'
+  whitePieces:
+    startLetter: 'w'
+    wp: 'wp'
+    wr: 'wr'
+    wk: 'wk'
+    wb: 'wb'
+    wq: 'wq'
+    wK: 'wK'
+  blackPieces:
+    startLetter: 'b'
+    bp: 'bp'
+    br: 'br'
+    bk: 'bk'
+    bb: 'bb'
+    bq: 'bq'
+    bK: 'bK'
+imagePath:
+  icon: 'Resources\images\icon.png'
+  menuBackground: 'Resources\images\menuBackground.png'
+  gameBackground: 'Resources\images\gameBackground.jpg'
+  loseImage: 'Resources\images\loseImage.png'
+  winImage: 'Resources\images\winImage.png'
+  bp: 'Resources\images\blackPawn.png'
+  br: 'Resources\images\blackRook.png'
+  bk: 'Resources\images\blackKnight.png'
+  bb: 'Resources\images\blackBishop.png'
+  bq: 'Resources\images\blackQueen.png'
+  bK: 'Resources\images\blackKing.png'
+  wp: 'Resources\images\whitePawn.png'
+  wr: 'Resources\images\whiteRook.png'
+  wk: 'Resources\images\whiteKnight.png'
+  wb: 'Resources\images\whiteBishop.png'
+  wq: 'Resources\images\whiteQueen.png'
+  wK: 'Resources\images\whiteKing.png'
+screenConfig:
+  width: 1040
+  height: 720
+  FPS: 60
+  textPT: 24
+socketConfig:
+  serverIP: 127.0.0.1
+  serverPort: 55000
+  serverListen: 5
+  buffer: 2048

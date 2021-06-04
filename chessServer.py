@@ -1,6 +1,12 @@
+##  @file chessServer.py
+
 import threading
 import socket
 import yaml
+
+
+## Funzione che genera a livello basso la scacchiera
+# @return chessboard scacchiera a livello basso
 
 
 def chessboard_first_generation():
@@ -33,6 +39,11 @@ def chessboard_first_generation():
     return chessboard
 
 
+## La funzione si occupa di convertire la matrice in una stringa per poterla inviare
+# @param chessboard matrice rappresentante la scacchiera
+# @return string la scacchiera fatta a stringa
+
+
 def from_chessboard_to_string(chessboard):
     string = ''
     for line in chessboard:
@@ -41,9 +52,15 @@ def from_chessboard_to_string(chessboard):
     return string
 
 
+## Classe che istanzia il server
+
+
 class ChessServer:
     __connection = False
     __clients = []
+
+    ##  Costruttore
+    #  @param self riferimento all'oggeto stesso
 
     def __init__(self):
         with open('Configuration.yaml', 'r') as yamlConfig:
@@ -64,6 +81,10 @@ class ChessServer:
         except socket.error:
             print('Errore in fasi di avvio. Riavvio del server in corso...\n')
             self.__init__()
+
+    ## classe dalla quale verrà generato il thread che attende le connessioni
+    #  @param self riferimento all'oggeto stesso
+    # @param serverSocket il socket del server
 
     def connection(self, serverSocket):
         self.__connection = True
@@ -92,6 +113,12 @@ class ChessServer:
             except socket.error:
                 print('Il server si sta chiudendo, bye bye!')
 
+    ## La funzione da cui verrà generato il thread che gestisce la partita
+    #  @param self riferimento all'oggeto stesso
+    # @param whiteSocket socket di comunicazione del giocatore bianco
+    # @param blackSocket socket di comunicazione del giocatore nero
+    # @buffer numero di byte massimi della lunghezza del messaggio
+
     def communication(self, whiteSocket, blackSocket, buffer):
         run = True
 
@@ -107,6 +134,10 @@ class ChessServer:
 
         self.update((whiteSocket, blackSocket))
 
+    ## La funzione che libera il vettore dei socket dai giocatori disconnessi
+    #  @param self riferimento all'oggeto stesso
+    # param sockets la coppia di socket da chiudere
+
     def update(self, sockets):
         c = 0
         for client in self.__clients:
@@ -117,11 +148,17 @@ class ChessServer:
         sockets[0].close()
         sockets[1].close()
 
+    ## La funzione che comunica a tutti i socket la chiusura del server
+    #  @param self riferimento all'oggeto stesso
+
     def broadcast(self):
         for client in self.__clients:
             client[0].close()
             client[1].close()
             self.__clients.pop(0)
+
+    ## La funzione che spegne le attività del server
+    #  @param self riferimento all'oggeto stesso
 
     def server_shutdown(self, serverSocket):
         while input() != 'close':
@@ -131,11 +168,20 @@ class ChessServer:
         serverSocket.close()
         raise socket.error
 
+    ## Funzione che modifica lo stato della variabile __connection
+    #  @param self riferimento all'oggeto stesso
+
     def set_connection_run(self):
         self.__connection = not self.__connection
 
+    ## funzione che restituisce lo stato della variabile __connection
+    #  @param self riferimento all'oggeto stesso
+
     def get_connection_run(self):
         return self.__connection
+
+
+## Funzione principale del programma, partirà da qui
 
 
 def __main__():
