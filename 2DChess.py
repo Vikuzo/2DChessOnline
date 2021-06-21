@@ -685,6 +685,8 @@ class ChessClient:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.__running, self.__playing = False, False
+                    clientSocket.send('EXIT'.encode('utf-8'))
+                    clientSocket.close()
 
                 for item in self.__buttons:
                     item.click(event, self.__config, self.__height, self.__width, self.__all_pieces,
@@ -705,6 +707,9 @@ class ChessClient:
                             pygame.display.update()
 
                             message = clientSocket.recv(self.__config['socketConfig']['buffer']).decode('utf-8')
+                            if message == 'EXIT':
+                                _ = ChessClient()
+
                             if message == self.__config['chessConfig']['wins']:
                                 self.__running = False
                                 after_game_screen = True
@@ -745,9 +750,8 @@ class ChessClient:
             win = pygame.transform.scale(win, (self.__width // 2, self.__height // 2))
             window.blit(win, (self.__width // 2 - (self.__width // 4), self.__height // 2 - (self.__height//4)))
 
-        pygame.display.update()
-
         while after_game_screen:
+            pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     after_game_screen, self.__playing = False, False

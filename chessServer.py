@@ -126,10 +126,14 @@ class ChessServer:
             chessboard = whiteSocket.recv(buffer).decode('utf-8')
             print(whiteSocket, end=' -->')
             print(chessboard)
+            if chessboard == 'EXIT':
+                run = False
             blackSocket.send(chessboard.encode('utf-8'))
             chessboard = blackSocket.recv(buffer).decode('utf-8')
             print(blackSocket, end=' -->')
             print(chessboard)
+            if chessboard == 'EXIT':
+                run = False
             whiteSocket.send(chessboard.encode('utf-8'))
 
         self.update((whiteSocket, blackSocket))
@@ -141,9 +145,10 @@ class ChessServer:
     def update(self, sockets):
         c = 0
         for client in self.__clients:
-            c += 1
+
             if client == sockets:
                 self.__clients.pop(c)
+            c += 1
 
         sockets[0].close()
         sockets[1].close()
